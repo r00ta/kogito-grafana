@@ -1,6 +1,7 @@
 package org.acme.kogito.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.acme.kogito.api.Grafana;
 
 public class GrafanaDashboard {
     @JsonProperty("dashboard")
@@ -11,4 +12,9 @@ public class GrafanaDashboard {
 
     @JsonProperty("overwrite")
     public boolean overwrite;
+
+    public GrafanaDashboard(int folderId, boolean overwrite){
+        this.folderId = folderId;
+        this.overwrite = overwrite;
+    }
 }

@@ -61,4 +61,14 @@ public class GrafanaDashboardMeta {
 
     @JsonProperty("links")
     public List<String> links = new ArrayList<>(); //todo
+
+    public GrafanaDashboardMeta(String id, String uid, String title, List<String> tags, String timezone, int schemaVersion, int version){
+        this.id = id;
+        this.uid = uid;
+        this.title = title;
+        this.tags = tags;
+        this.timezone = timezone;
+        this.schemaVersion = schemaVersion;
+        this.version = version;
+    }
 }

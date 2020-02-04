@@ -30,4 +30,11 @@ public class GrafanaPanel {
 
     @JsonProperty("targets")
     public List<GrafanaTarget> targets = new ArrayList<GrafanaTarget>();
+
+    public GrafanaPanel(int id, String title, String type){
+        this.id = id;
+        this.title = title;
+        this.type = type;
+    }
+
 }

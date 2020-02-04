@@ -38,39 +38,25 @@ public class GrafanaManager implements IGrafanaManager {
 
     private ObjectMapper mapper = new ObjectMapper();
 
-    private String dashboardId;
-    private String dashboardUid;
-    private String dashboardUrl;
-
     private GrafanaDashboard currentDashboard;
+
+    private int numOfPanel = 0;
 
     @PostConstruct
     public void setUp() throws JsonProcessingException {
         activatedRules = new HashSet<String>();
         httpHelper = new HttpHelper(BASEHOST);
-        GrafanaDashboard dashboard = new GrafanaDashboard();
-        dashboard.folderId = 0;
-        dashboard.overwrite = true;
-        dashboard.meta = new GrafanaDashboardMeta();
-        dashboard.meta.id = null;
-        dashboard.meta.uid = null;
-        dashboard.meta.title = "DRL Dashboard";
-        dashboard.meta.tags = null;
-        dashboard.meta.timezone = "browser";
-        dashboard.meta.schemaVersion = 16;
-        dashboard.meta.version = 0;
+        GrafanaDashboard dashboard = new GrafanaDashboard(0, true);
+        dashboard.meta = new GrafanaDashboardMeta(null, null, "DRL Dashboard", null, "browser", 16, 0);
         System.out.println(mapper.writeValueAsString(dashboard));
         GrafanaNewDashboardResponse response = createNewDashboard(dashboard);
-        dashboardId = response.id;
-        dashboardUid = response.uid;
-        dashboardUrl = response.url;
         currentDashboard = dashboard;
         System.out.println(mapper.writeValueAsString(response));
     }
 
     @Override
     public void createDefaultDashboard() {
-        httpHelper.doPost("suca", null);
+        httpHelper.doPost("todo", null);
     }
 
     @Override
@@ -92,13 +78,15 @@ public class GrafanaManager implements IGrafanaManager {
         if (!retrievedSet.equals(activatedRules)){
             for(String rule : retrievedSet){
                 if (!activatedRules.contains(rule)){
+                    numOfPanel++;
                     activatedRules.add(rule);
-                    GrafanaPanel panel = new GrafanaPanel();
-                    panel.id = new Random().nextInt();
-                    panel.title = rule + " fire count";
-                    panel.gridPos = new GrafanaGridPos(8 * (activatedRules.size() - 1), 12 * (activatedRules.size() - 1), 12, 8);
+                    GrafanaPanel panel = new GrafanaPanel(
+                            new Random().nextInt(),
+                            rule + " fire count",
+                            "graph"
+                    );
+                    panel.gridPos = new GrafanaGridPos(12 * ( (numOfPanel - 1) % 2), 8 * ((numOfPanel - 1) / 2), 12, 8);
                     panel.targets.add(new GrafanaTarget(String.format("drl_match_fired_nanosecond_count{rule_name=\"%s\"}", rule), "time_series", 1, rule));
-                    panel.type = "graph";
                     panel.lines = true;
                     System.out.println(currentDashboard.folderId);
                     System.out.println(currentDashboard.meta.panels);
